@@ -1,0 +1,87 @@
+{% extends "elections/base.html" %}
+
+{% block title %}New Polling Unit Result | Bincom Election Explorer{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+    <p class="eyebrow">Question 3</p>
+    <h1>Store Results for a New Polling Unit</h1>
+    <p class="muted">The form captures a new polling unit plus a score for every party in one submission.</p>
+</section>
+
+<form method="post" class="panel form-panel" id="submission-form">
+    {% csrf_token %}
+    <div class="content-grid single-column-mobile">
+        <section>
+            <h2>Polling Unit Details</h2>
+            <div class="field-grid">
+                {% for field in form %}
+                    {% if not field.name|slice:":6" == "party_" %}
+                        <label class="field-block">
+                            <span>{{ field.label }}</span>
+                            {{ field }}
+                            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                            {% for error in field.errors %}<small class="error-text">{{ error }}</small>{% endfor %}
+                        </label>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </section>
+
+        <section>
+            <h2>Party Scores</h2>
+            <div class="field-grid scores-grid">
+                {% for field in form %}
+                    {% if field.name|slice:":6" == "party_" %}
+                        <label class="field-block">
+                            <span>{{ field.label }}</span>
+                            {{ field }}
+                            {% for error in field.errors %}<small class="error-text">{{ error }}</small>{% endfor %}
+                        </label>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <div class="form-actions">
+        <button class="button button-primary" type="submit">Save Polling Unit Result</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function populateWards(selectedWard = "") {
+    const lgaId = document.getElementById("id_lga").value;
+    const wardSelect = document.getElementById("id_ward");
+    if (!lgaId) {
+        wardSelect.innerHTML = "";
+        return;
+    }
+
+    const response = await fetch(`/api/wards/?lga_id=${lgaId}`);
+    const data = await response.json();
+    wardSelect.innerHTML = "";
+
+    for (const item of data.items) {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.name;
+        if (String(item.id) === String(selectedWard)) {
+            option.selected = true;
+        }
+        wardSelect.appendChild(option);
+    }
+}
+
+document.getElementById("id_lga").addEventListener("change", () => populateWards());
+
+window.addEventListener("load", () => {
+    const wardValue = document.getElementById("id_ward").value;
+    if (!document.getElementById("id_ward").options.length && document.getElementById("id_lga").value) {
+        populateWards(wardValue);
+    }
+});
+</script>
+{% endblock %}

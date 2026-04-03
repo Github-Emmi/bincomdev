@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Bincom Election Explorer{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <a class="brand" href="{% url 'elections:dashboard' %}">
+                <span class="brand-mark">BE</span>
+                <span>
+                    <strong>Bincom Election Explorer</strong>
+                    <small>Delta State 2011 polling data</small>
+                </span>
+            </a>
+            <nav class="site-nav">
+                <a href="{% url 'elections:polling-unit-results' %}">Question 1</a>
+                <a href="{% url 'elections:lga-results' %}">Question 2</a>
+                <a href="{% url 'elections:polling-unit-create' %}">Question 3</a>
+            </nav>
+        </header>
+
+        {% if messages %}
+            <section class="message-stack">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <main class="page-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,96 @@
+{% extends "elections/base.html" %}
+
+{% block title %}LGA Results | Bincom Election Explorer{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+    <p class="eyebrow">Question 2</p>
+    <h1>Summed LGA Result</h1>
+    <p class="muted">This page calculates totals from polling unit results only, then shows the announced LGA table separately for comparison.</p>
+</section>
+
+<section class="content-grid single-column-mobile">
+    <article class="panel">
+        <h2>Select an LGA</h2>
+        <form method="get" class="selector-form">
+            <div class="field-grid compact">
+                <label>
+                    <span>Local Government Area</span>
+                    <select name="lga">
+                        {% for lga in available_lgas %}
+                            <option value="{{ lga.lga_id }}" {% if selected_lga_id == lga.lga_id|stringformat:"s" %}selected{% endif %}>{{ lga.lga_name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <button class="button button-primary" type="submit">Calculate Totals</button>
+        </form>
+    </article>
+
+    <article class="panel spotlight">
+        {% if selected_lga %}
+            <div class="panel-header">
+                <div>
+                    <p class="eyebrow">Computed from polling unit results</p>
+                    <h2>{{ selected_lga.lga_name }}</h2>
+                    <p class="muted">{{ polling_unit_count }} polling units contributed to this estimate.</p>
+                </div>
+                <div class="stat-badge">
+                    <strong>{{ calculated.grand_total }}</strong>
+                    <span>Calculated votes</span>
+                </div>
+            </div>
+
+            <div class="scoreboard">
+                {% for row in calculated.rows %}
+                    <article class="score-row">
+                        <div class="score-meta">
+                            <strong>{{ row.label }}</strong>
+                            <span>{{ row.score }} votes</span>
+                        </div>
+                        <div class="score-bar">
+                            <span style="width: {{ row.bar_width }}%"></span>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Cross-check</p>
+            <h2>Calculated vs Announced LGA Result</h2>
+        </div>
+        <div class="stat-badge alt">
+            <strong>{{ announced_total }}</strong>
+            <span>Announced LGA total</span>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Party</th>
+                    <th>Calculated Sum</th>
+                    <th>Announced LGA</th>
+                    <th>Difference</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in comparison_rows %}
+                    <tr>
+                        <td>{{ row.label }}</td>
+                        <td>{{ row.score }}</td>
+                        <td>{{ row.announced_score }}</td>
+                        <td>{% if row.difference > 0 %}+{% endif %}{{ row.difference }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "elections/base.html" %}
+
+{% block title %}Polling Unit Result | Bincom Election Explorer{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+    <p class="eyebrow">Question 1</p>
+    <h1>Individual Polling Unit Result</h1>
+    <p class="muted">Use the chained selectors to drill down from LGA to ward to polling unit.</p>
+</section>
+
+<section class="content-grid single-column-mobile">
+    <article class="panel">
+        <h2>Find a Polling Unit</h2>
+        <form class="selector-form" method="get" id="polling-unit-form">
+            <div class="field-grid">
+                <label>
+                    <span>LGA</span>
+                    <select name="lga" id="lga-select">
+                        {% for lga in available_lgas %}
+                            <option value="{{ lga.lga_id }}" {% if selected_lga_id == lga.lga_id|stringformat:"s" %}selected{% endif %}>{{ lga.lga_name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>Ward</span>
+                    <select name="ward" id="ward-select" data-selected="{{ selected_ward_id }}">
+                        {% for ward in ward_options %}
+                            <option value="{{ ward.uniqueid }}" {% if selected_ward_id == ward.uniqueid|stringformat:"s" %}selected{% endif %}>{{ ward.ward_name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>Polling Unit</span>
+                    <select name="polling_unit" id="polling-unit-select" data-selected="{{ selected_polling_unit_id }}">
+                        {% for unit in polling_unit_options %}
+                            <option value="{{ unit.uniqueid }}" {% if selected_polling_unit_id == unit.uniqueid|stringformat:"s" %}selected{% endif %}>{{ unit.polling_unit_name }} ({{ unit.polling_unit_number }})</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <button class="button button-primary" type="submit">Show Result</button>
+        </form>
+    </article>
+
+    <article class="panel spotlight">
+        {% if polling_unit %}
+            <div class="panel-header">
+                <div>
+                    <p class="eyebrow">Selected Polling Unit</p>
+                    <h2>{{ polling_unit.polling_unit_name }}</h2>
+                    <p class="muted">
+                        {{ polling_unit.polling_unit_number }}{% if selected_ward %} · {{ selected_ward.ward_name }}{% endif %}{% if selected_lga %} · {{ selected_lga.lga_name }}{% endif %}
+                    </p>
+                </div>
+                <div class="stat-badge">
+                    <strong>{{ aggregated_results.grand_total }}</strong>
+                    <span>Total votes</span>
+                </div>
+            </div>
+
+            <div class="scoreboard">
+                {% for row in aggregated_results.rows %}
+                    <article class="score-row">
+                        <div class="score-meta">
+                            <strong>{{ row.label }}</strong>
+                            <span>{{ row.score }} votes{% if row.row_count %} · {{ row.row_count }} row{{ row.row_count|pluralize }}{% endif %}</span>
+                        </div>
+                        <div class="score-bar">
+                            <span style="width: {{ row.bar_width }}%"></span>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <h2>No polling unit result available</h2>
+            <p class="muted">Pick an LGA to load polling units that have announced results.</p>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function fillSelect(selectElement, items, selectedValue, formatter) {
+    selectElement.innerHTML = "";
+    for (const item of items) {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = formatter(item);
+        if (String(item.id) === String(selectedValue)) {
+            option.selected = true;
+        }
+        selectElement.appendChild(option);
+    }
+}
+
+async function loadWards(selectedWard = "") {
+    const lgaId = document.getElementById("lga-select").value;
+    const response = await fetch(`/api/wards/?lga_id=${lgaId}&with_results=1`);
+    const data = await response.json();
+    const wardSelect = document.getElementById("ward-select");
+    await fillSelect(wardSelect, data.items, selectedWard, (item) => item.name);
+    return wardSelect.value;
+}
+
+async function loadPollingUnits(selectedUnit = "") {
+    const lgaId = document.getElementById("lga-select").value;
+    const wardId = document.getElementById("ward-select").value;
+    const response = await fetch(`/api/polling-units/?lga_id=${lgaId}&ward_id=${wardId}&with_results=1`);
+    const data = await response.json();
+    const unitSelect = document.getElementById("polling-unit-select");
+    await fillSelect(unitSelect, data.items, selectedUnit, (item) => `${item.name} (${item.number})`);
+}
+
+document.getElementById("lga-select").addEventListener("change", async () => {
+    await loadWards();
+    await loadPollingUnits();
+});
+
+document.getElementById("ward-select").addEventListener("change", async () => {
+    await loadPollingUnits();
+});
+
+window.addEventListener("load", async () => {
+    const wardSelect = document.getElementById("ward-select");
+    const unitSelect = document.getElementById("polling-unit-select");
+    if (!wardSelect.options.length) {
+        const selectedWard = wardSelect.dataset.selected;
+        const selectedUnit = unitSelect.dataset.selected;
+        await loadWards(selectedWard);
+        await loadPollingUnits(selectedUnit);
+    }
+});
+</script>
+{% endblock %}

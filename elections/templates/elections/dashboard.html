@@ -1,0 +1,63 @@
+{% extends "elections/base.html" %}
+
+{% block title %}Dashboard | Bincom Election Explorer{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Django Assessment Delivery</p>
+        <h1>Bincom Election Result Explorer</h1>
+        <p class="hero-copy">
+            This solution loads the provided SQL dump, focuses on Delta State records, and answers all three questions:
+            individual polling unit results, summed LGA results, and new polling unit result submission.
+        </p>
+        <div class="hero-actions">
+            <a class="button button-primary" href="{% url 'elections:polling-unit-results' %}">View Polling Unit Results</a>
+            <a class="button button-secondary" href="{% url 'elections:lga-results' %}">Open LGA Aggregation</a>
+        </div>
+    </div>
+    <div class="hero-panel">
+        <h2>Dataset Snapshot</h2>
+        <div class="stats-grid">
+            <article class="stat-card">
+                <span>{{ summary.lga_count }}</span>
+                <small>LGAs in Delta State</small>
+            </article>
+            <article class="stat-card">
+                <span>{{ summary.ward_count }}</span>
+                <small>Wards imported</small>
+            </article>
+            <article class="stat-card">
+                <span>{{ summary.polling_unit_count }}</span>
+                <small>Usable polling units</small>
+            </article>
+            <article class="stat-card">
+                <span>{{ summary.result_polling_unit_count }}</span>
+                <small>Polling units with announced results</small>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="content-grid">
+    <article class="panel">
+        <h2>Architecture Step-by-Step</h2>
+        <ol class="steps-list">
+            {% for step in architecture_steps %}
+                <li>{{ step }}</li>
+            {% endfor %}
+        </ol>
+    </article>
+    <article class="panel">
+        <h2>LGAs With Announced PU Results</h2>
+        <div class="pill-list">
+            {% for lga in lgas_with_results %}
+                <a class="pill" href="{% url 'elections:lga-results' %}?lga={{ lga.lga_id }}">{{ lga.lga_name }}</a>
+            {% endfor %}
+        </div>
+        <p class="muted">
+            The source file contains many placeholder polling unit rows, so the interface intentionally focuses on records with meaningful metadata.
+        </p>
+    </article>
+</section>
+{% endblock %}
