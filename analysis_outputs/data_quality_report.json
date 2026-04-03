@@ -1,0 +1,185 @@
+{
+  "delta_lga_count": 25,
+  "placeholder_polling_units": 170,
+  "duplicate_polling_unit_id_groups": 18,
+  "duplicate_polling_unit_id_examples": [
+    {
+      "polling_unit_id": 0,
+      "row_count": 170,
+      "min_uniqueid": 110,
+      "max_uniqueid": 279
+    },
+    {
+      "polling_unit_id": 1,
+      "row_count": 6,
+      "min_uniqueid": 12,
+      "max_uniqueid": 108
+    },
+    {
+      "polling_unit_id": 2,
+      "row_count": 5,
+      "min_uniqueid": 27,
+      "max_uniqueid": 87
+    },
+    {
+      "polling_unit_id": 3,
+      "row_count": 10,
+      "min_uniqueid": 21,
+      "max_uniqueid": 85
+    },
+    {
+      "polling_unit_id": 4,
+      "row_count": 8,
+      "min_uniqueid": 9,
+      "max_uniqueid": 99
+    },
+    {
+      "polling_unit_id": 5,
+      "row_count": 9,
+      "min_uniqueid": 10,
+      "max_uniqueid": 105
+    },
+    {
+      "polling_unit_id": 6,
+      "row_count": 12,
+      "min_uniqueid": 8,
+      "max_uniqueid": 109
+    },
+    {
+      "polling_unit_id": 7,
+      "row_count": 6,
+      "min_uniqueid": 18,
+      "max_uniqueid": 90
+    },
+    {
+      "polling_unit_id": 8,
+      "row_count": 8,
+      "min_uniqueid": 30,
+      "max_uniqueid": 95
+    },
+    {
+      "polling_unit_id": 9,
+      "row_count": 4,
+      "min_uniqueid": 17,
+      "max_uniqueid": 94
+    }
+  ],
+  "distinct_result_polling_units": 18,
+  "result_backed_lgas": 8,
+  "polling_unit_lga_ward_mismatches": 1,
+  "polling_unit_lga_ward_mismatch_examples": [
+    {
+      "uniqueid": 16,
+      "polling_unit_id": 5,
+      "polling_unit_lga_id": 7,
+      "uniquewardid": 59,
+      "ward_lga_id": 6,
+      "ward_name": "Oghara I",
+      "polling_unit_number": "DT0607005",
+      "polling_unit_name": "school in ethiope west"
+    }
+  ],
+  "party_table_codes": [
+    "ACN",
+    "ANPP",
+    "CDC",
+    "CPP",
+    "DPP",
+    "JP",
+    "LABOUR",
+    "PDP",
+    "PPA"
+  ],
+  "result_table_codes": [
+    "ACN",
+    "ANPP",
+    "CDC",
+    "CPP",
+    "DPP",
+    "JP",
+    "LABO",
+    "PDP",
+    "PPA"
+  ],
+  "party_code_note": "LABOUR is used in the party table while LABO is used in result tables.",
+  "announced_lga_key_note": "announced_lga_results.lga_name stores numeric LGA IDs as strings.",
+  "largest_lga_comparison_gaps": [
+    {
+      "lga_name": "Warri South West",
+      "party_abbreviation": "PDP",
+      "polling_unit_sum": 2705,
+      "announced_lga_sum": 158975,
+      "difference": -156270
+    },
+    {
+      "lga_name": "Ethiope West",
+      "party_abbreviation": "PDP",
+      "polling_unit_sum": 5155,
+      "announced_lga_sum": 128269,
+      "difference": -123114
+    },
+    {
+      "lga_name": "Ika North - East",
+      "party_abbreviation": "PDP",
+      "polling_unit_sum": 1178,
+      "announced_lga_sum": 107808,
+      "difference": -106630
+    },
+    {
+      "lga_name": "Warri South",
+      "party_abbreviation": "PDP",
+      "polling_unit_sum": 621,
+      "announced_lga_sum": 103775,
+      "difference": -103154
+    },
+    {
+      "lga_name": "Sapele",
+      "party_abbreviation": "DPP",
+      "polling_unit_sum": 719,
+      "announced_lga_sum": 99815,
+      "difference": -99096
+    },
+    {
+      "lga_name": "Ika North - East",
+      "party_abbreviation": "CDC",
+      "polling_unit_sum": 794,
+      "announced_lga_sum": 95860,
+      "difference": -95066
+    },
+    {
+      "lga_name": "Ughelli North",
+      "party_abbreviation": "PPA",
+      "polling_unit_sum": 1636,
+      "announced_lga_sum": 94167,
+      "difference": -92531
+    },
+    {
+      "lga_name": "Ukwuani",
+      "party_abbreviation": "DPP",
+      "polling_unit_sum": 1019,
+      "announced_lga_sum": 92725,
+      "difference": -91706
+    },
+    {
+      "lga_name": "Sapele",
+      "party_abbreviation": "PDP",
+      "polling_unit_sum": 802,
+      "announced_lga_sum": 92259,
+      "difference": -91457
+    },
+    {
+      "lga_name": "Warri South",
+      "party_abbreviation": "CDC",
+      "polling_unit_sum": 306,
+      "announced_lga_sum": 90465,
+      "difference": -90159
+    }
+  ],
+  "recommendations": [
+    "Continue filtering placeholder polling units out of selectors and analytics.",
+    "Use polling_unit.uniqueid as the true application identity; polling_unit_id is reused in source data.",
+    "Surface ward/LGA mismatches in audit tooling before trusting relational joins.",
+    "Normalize LABOUR and LABO through one shared canonicalization function.",
+    "Treat announced LGA totals as a cross-check view because polling-unit coverage is incomplete."
+  ]
+}

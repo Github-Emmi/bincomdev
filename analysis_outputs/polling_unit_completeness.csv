@@ -1,0 +1,26 @@
+lga_id,lga_name,polling_units_with_metadata,polling_units_with_results,coverage_pct,result_status
+2,Aniocha - South,1,0,0.0,no announced polling-unit results available
+1,Aniocha North,4,0,0.0,no announced polling-unit results available
+31,Bomadi,18,0,0.0,no announced polling-unit results available
+32,Burutu,1,0,0.0,no announced polling-unit results available
+5,Ethiope East,0,0,0.0,no announced polling-unit results available
+6,Ethiope West,14,4,28.57142857142857,announced polling-unit results available
+8,Ika - South,0,0,0.0,no announced polling-unit results available
+7,Ika North - East,1,1,100.0,announced polling-unit results available
+9,Isoko North,2,0,0.0,no announced polling-unit results available
+10,Isoko South,2,0,0.0,no announced polling-unit results available
+11,Ndokwa East,2,0,0.0,no announced polling-unit results available
+12,Ndokwa West,0,0,0.0,no announced polling-unit results available
+13,Okpe,1,0,0.0,no announced polling-unit results available
+14,Oshimili - North,0,0,0.0,no announced polling-unit results available
+15,Oshimili - South,19,0,0.0,no announced polling-unit results available
+16,Patani,0,0,0.0,no announced polling-unit results available
+17,Sapele,2,1,50.0,announced polling-unit results available
+18,Udu,0,0,0.0,no announced polling-unit results available
+19,Ughelli North,4,2,50.0,announced polling-unit results available
+20,Ughelli South,0,0,0.0,no announced polling-unit results available
+21,Ukwuani,4,1,25.0,announced polling-unit results available
+22,Uvwie,10,5,50.0,announced polling-unit results available
+33,Warri North,0,0,0.0,no announced polling-unit results available
+34,Warri South,6,1,16.666666666666664,announced polling-unit results available
+35,Warri South West,11,3,27.27272727272727,announced polling-unit results available
