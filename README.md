@@ -56,6 +56,33 @@ python scripts/analyze_election_data.py
 
 This writes CSV summaries into `analysis_outputs/`.
 
+To build the LGA-level modeling dataset used by the ML submission:
+
+```bash
+python scripts/build_lga_modeling_dataset.py
+```
+
+To regenerate the Bincom-specific submission notebook from source:
+
+```bash
+python scripts/render_ml_submission_notebook.py
+```
+
+To execute the completed notebook from top to bottom:
+
+```bash
+jupyter nbconvert --to notebook --execute --inplace ML_Submission_Template.ipynb
+```
+
+The notebook and helper scripts implement:
+
+1. EDA across all 25 Delta LGAs.
+2. Missing-result coverage analysis.
+3. LGA-level feature engineering for the 8 result-backed LGAs.
+4. StandardScaler vs MinMaxScaler comparison.
+5. Hierarchical clustering with K-means elbow diagnostics.
+6. Cluster strategy briefs exported into `analysis_outputs/cluster_profiles.csv`.
+
 ## Deployment note
 
 `render.yaml` is included for Render deployment. The build step installs dependencies, runs migrations, imports `bincom_test.sql`, and collects static files automatically.

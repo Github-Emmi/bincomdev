@@ -104,7 +104,8 @@ def build_notebook():
             if str(ROOT) not in sys.path:
                 sys.path.insert(0, str(ROOT))
 
-            os.environ.setdefault("LOKY_MAX_CPU_COUNT", "4")
+            if not os.environ.get("LOKY_MAX_CPU_COUNT"):
+                os.environ["LOKY_MAX_CPU_COUNT"] = "4"
             warnings.filterwarnings("ignore")
 
             from scripts.election_ml_pipeline import (

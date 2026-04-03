@@ -9,5 +9,4 @@ matplotlib
 seaborn
 statsmodels
 jupyterlab
-jupyter-notebook
 openpyxl

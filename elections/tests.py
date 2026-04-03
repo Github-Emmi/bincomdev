@@ -1,3 +1,5 @@
+from tempfile import TemporaryDirectory
+
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
@@ -7,6 +9,7 @@ from scripts.election_ml_pipeline import (
     build_completeness_table,
     build_modeling_dataset,
     evaluate_clustering_options,
+    export_ml_artifacts,
     fit_final_clustering,
     get_feature_columns,
     load_election_frames,
@@ -125,3 +128,9 @@ class ElectionViewsTests(TestCase):
         self.assertEqual(set(evaluation["k"].tolist()), {2, 3, 4})
         self.assertIn("hierarchical_ward", set(evaluation["method"].tolist()))
         self.assertEqual(clustered["cluster_id"].nunique(), 3)
+
+    def test_ml_pipeline_can_export_analysis_artifacts(self):
+        with TemporaryDirectory() as tmpdir:
+            outputs = export_ml_artifacts(db_path="db.sqlite3", out_dir=tmpdir)
+            for path in outputs.values():
+                self.assertTrue(path.exists(), f"Expected export artifact at {path}")

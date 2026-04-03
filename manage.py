@@ -6,6 +6,8 @@ import sys
 
 def main():
     """Run administrative tasks."""
+    if not os.environ.get("LOKY_MAX_CPU_COUNT"):
+        os.environ["LOKY_MAX_CPU_COUNT"] = "4"
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
     try:
         from django.core.management import execute_from_command_line

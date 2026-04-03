@@ -3,6 +3,9 @@ import os
 import sqlite3
 from pathlib import Path
 
+if not os.environ.get("LOKY_MAX_CPU_COUNT"):
+    os.environ["LOKY_MAX_CPU_COUNT"] = "4"
+
 import numpy as np
 import pandas as pd
 from scipy.cluster.hierarchy import linkage
@@ -10,8 +13,6 @@ from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
-
-os.environ.setdefault("LOKY_MAX_CPU_COUNT", "4")
 
 DELTA_STATE_ID = 25
 RESULT_BACKED_LGA_IDS = [6, 7, 17, 19, 21, 22, 34, 35]
