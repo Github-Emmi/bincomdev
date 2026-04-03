@@ -1,6 +1,14 @@
 from django.core.management import BaseCommand, call_command
 
-from elections.models import AnnouncedLGAResult, AnnouncedPUResult, LGA, Party, PollingUnit, State, Ward
+from elections.models import (
+    LGA,
+    AnnouncedLGAResult,
+    AnnouncedPUResult,
+    Party,
+    PollingUnit,
+    State,
+    Ward,
+)
 
 
 class Command(BaseCommand):

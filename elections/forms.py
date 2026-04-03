@@ -2,7 +2,7 @@ from django import forms
 from django.db import transaction
 from django.utils import timezone
 
-from .models import AnnouncedPUResult, LGA, Party, PollingUnit, Ward
+from .models import LGA, AnnouncedPUResult, Party, PollingUnit, Ward
 from .services import DELTA_STATE_ID, allocate_next_polling_unit_id
 from .source_quirks import normalize_party_code, party_label
 

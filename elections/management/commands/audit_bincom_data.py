@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from django.db.models import Count, Max, Min, Q
 
-from elections.models import AnnouncedLGAResult, AnnouncedPUResult, Party, PollingUnit
+from elections.models import AnnouncedPUResult, Party, PollingUnit
 
 
 PLACEHOLDER_FILTER = (

@@ -9,9 +9,19 @@ from django.db import transaction
 from django.db.models import Max
 from django.utils import timezone
 
-from elections.models import AnnouncedLGAResult, AnnouncedPUResult, LGA, Party, PollingUnit, SequenceCounter, State, Ward
+from elections.models import (
+    LGA,
+    AnnouncedLGAResult,
+    AnnouncedPUResult,
+    Party,
+    PollingUnit,
+    SequenceCounter,
+    State,
+    Ward,
+)
 from elections.services import clear_lookup_caches
 from elections.source_quirks import REQUIRED_IMPORT_TABLES
+
 
 INSERT_PATTERN = re.compile(
     r"INSERT INTO `(?P<table>[^`]+)` \((?P<columns>.*?)\) VALUES\s*(?P<values>.*?);(?=\s*(?:--|\Z))",

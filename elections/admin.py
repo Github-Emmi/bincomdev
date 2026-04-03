@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from .models import AnnouncedLGAResult, AnnouncedPUResult, LGA, Party, PollingUnit, SequenceCounter, State, Ward
+from .models import (
+    LGA,
+    AnnouncedLGAResult,
+    AnnouncedPUResult,
+    Party,
+    PollingUnit,
+    SequenceCounter,
+    State,
+    Ward,
+)
 
 
 @admin.register(State)

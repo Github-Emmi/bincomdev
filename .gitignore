@@ -5,3 +5,5 @@ db.sqlite3
 staticfiles/
 .ipynb_checkpoints/
 analysis_outputs/
+.github/
+.ruff_cache/

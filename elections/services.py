@@ -1,10 +1,11 @@
 from collections import defaultdict
 from functools import lru_cache
+from typing import Any
 
-from django.db.models import Count, IntegerField, Max, Sum
+from django.db.models import Count, IntegerField, Max, QuerySet, Sum
 from django.db.models.functions import Cast
 
-from .models import AnnouncedPUResult, LGA, Party, PollingUnit, SequenceCounter, Ward
+from .models import LGA, AnnouncedPUResult, Party, PollingUnit, SequenceCounter, Ward
 from .source_quirks import DELTA_STATE_ID, PARTY_ORDER, normalize_party_code, party_label
 
 
@@ -21,11 +22,19 @@ def ordered_parties() -> list[dict[str, str]]:
     return [seen[code] for code in PARTY_ORDER if code in seen]
 
 
-def delta_lgas_queryset():
+def delta_lgas_queryset() -> QuerySet[LGA]:
+    """Return all LGAs for Delta State, ordered by name."""
     return LGA.objects.filter(state_id=DELTA_STATE_ID).order_by("lga_name")
 
 
-def displayable_polling_units_queryset(with_results_only: bool = False):
+def displayable_polling_units_queryset(
+    with_results_only: bool = False,
+) -> QuerySet[PollingUnit]:
+    """Return displayable polling units (excludes placeholders with empty names/numbers).
+
+    Args:
+        with_results_only: If True, return only polling units with announced results.
+    """
     # The source dump contains 170 placeholder polling-unit rows with blank labels or zero IDs.
     # This queryset defines the shared "usable polling unit" rule used across the UI.
     queryset = (
@@ -53,9 +62,16 @@ def displayable_polling_units_queryset(with_results_only: bool = False):
     return queryset.order_by("polling_unit_name", "polling_unit_number")
 
 
-def aggregate_party_scores(results_queryset):
-    totals = defaultdict(int)
-    row_counts = defaultdict(int)
+def aggregate_party_scores(
+    results_queryset: QuerySet[AnnouncedPUResult],
+) -> dict[str, Any]:
+    """Aggregate party scores from a queryset of announced results.
+
+    Returns a dictionary with 'rows' (list of party scores), 'grand_total',
+    and 'raw_entry_count'.
+    """
+    totals: dict[str, int] = defaultdict(int)
+    row_counts: dict[str, int] = defaultdict(int)
     aggregated_rows = results_queryset.values("party_abbreviation").annotate(
         score=Sum("party_score"),
         row_count=Count("party_abbreviation"),
@@ -68,7 +84,7 @@ def aggregate_party_scores(results_queryset):
 
     grand_total = sum(totals.values())
     top_score = max(totals.values(), default=0)
-    rows = []
+    rows: list[dict[str, Any]] = []
 
     for party in ordered_parties():
         score = totals.get(party["code"], 0)
@@ -106,13 +122,15 @@ def allocate_next_polling_unit_id() -> int:
     return current_value
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=1)  # type: ignore[misc]
 def ward_lookup() -> dict[int, Ward]:
+    """Cache all wards by uniqueid."""
     return {ward.uniqueid: ward for ward in Ward.objects.all()}
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=1)  # type: ignore[misc]
 def lga_lookup() -> dict[int, LGA]:
+    """Cache all Delta State LGAs by lga_id."""
     return {lga.lga_id: lga for lga in delta_lgas_queryset()}
 
 

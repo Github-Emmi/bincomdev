@@ -1,0 +1,123 @@
+[project]
+name = "bincom-election-explorer"
+version = "1.0.0"
+description = "Django application for exploring Delta State election results"
+requires-python = ">=3.10"
+authors = [{name = "Bincom Assessment", email = "dev@bincom.test"}]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+addopts = "--cov=elections --cov-report=term-missing --cov-report=html --cov-threshold=60 -v"
+testpaths = ["elections"]
+norecursedirs = [".git", ".venv", "staticfiles", "analysis_outputs"]
+
+[tool.coverage.run]
+source = ["elections"]
+omit = [
+    "*/migrations/*",
+    "*/tests.py",
+    "manage.py",
+    "config/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+    "except ImportError:",
+]
+skip_covered = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-include = ["*.pyi"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "W",      # pycodestyle warnings
+    "I",      # isort (import sorting)
+    "D",      # pydocstyle (docstrings)
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "A",      # flake8-builtins
+    "C4",     # flake8-comprehensions
+    "PTH",    # flake8-use-pathlib
+    "PIE",    # flake8-pie
+    "PT",     # flake8-pytest-style
+]
+ignore = [
+    "D100",  # Missing module docstring
+    "D101",  # Missing class docstring
+    "D102",  # Missing function docstring (too many false positives)
+    "D103",  # Missing method docstring
+    "D104",  # Missing package docstring
+    "D105",  # Missing magic method docstring
+    "D106",  # Missing nested class docstring
+    "D107",  # Missing init docstring
+    "E501",  # Line too long (handled by formatter)
+    "A003",  # Builtins used as class attributes (Django uses this pattern)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*/migrations/*" = ["D"]
+"**/tests.py" = ["D"]
+"manage.py" = ["D"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["elections", "config"]
+lines-after-imports = 2
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+)/
+'''
+
+[tool.pyright]
+include = ["elections", "config", "scripts"]
+exclude = [".venv", "migrations", "staticfiles", "analysis_outputs"]
+pythonVersion = "3.10"
+pythonPlatform = "Linux"
+typeCheckingMode = "basic"
+reportMissingImports = true
+reportMissingTypeStubs = false
+reportPrivateUsage = false
+reportUnusedVariable = "information"
+reportUnusedImport = "warning"
+reportUnusedClass = "information"
+reportUnusedFunction = "information"
+reportUnnecessaryIsInstance = "warning"
+reportConstantRedefinition = "warning"
+reportInvalidTypeForm = "warning"
+reportAssignmentType = true
+reportUnboundVariable = true
+reportOptionalOperand = true
+reportOptionalSubscript = true
+reportOptionalMemberAccess = true
+reportOptionalCall = true
+reportOptionalIterable = true
+reportOptionalContextManager = true
+reportOptionalIndex = true
