@@ -16,6 +16,9 @@ ALLOWED_HOSTS = [
     ).split(",")
     if host.strip()
 ]
+DEFAULT_CSRF_TRUSTED_ORIGINS = (
+    "http://127.0.0.1,http://localhost,https://bincom-election-explorer.onrender.com"
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -91,9 +94,11 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
-    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", DEFAULT_CSRF_TRUSTED_ORIGINS).split(",")
     if origin.strip()
 ]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

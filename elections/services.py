@@ -26,6 +26,8 @@ def delta_lgas_queryset():
 
 
 def displayable_polling_units_queryset(with_results_only: bool = False):
+    # The source dump contains 170 placeholder polling-unit rows with blank labels or zero IDs.
+    # This queryset defines the shared "usable polling unit" rule used across the UI.
     queryset = (
         PollingUnit.objects.filter(
             lga_id__in=delta_lgas_queryset().values_list("lga_id", flat=True)

@@ -2,7 +2,7 @@ services:
   - type: web
     name: bincom-election-explorer
     env: python
-    buildCommand: pip install -r requirements.txt && python manage.py migrate && python manage.py import_bincom_sql && python manage.py collectstatic --noinput
+    buildCommand: pip install -r requirements.txt && python manage.py migrate && python manage.py seed_demo_data --path bincom_test.sql && python manage.py collectstatic --noinput
     startCommand: gunicorn config.wsgi:application
     envVars:
       - key: DEBUG
@@ -11,3 +11,5 @@ services:
         generateValue: true
       - key: ALLOWED_HOSTS
         value: ".onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://bincom-election-explorer.onrender.com"

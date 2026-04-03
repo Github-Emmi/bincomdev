@@ -1,19 +1,36 @@
+import json
+from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest import skipUnless
 
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 
-from scripts.election_ml_pipeline import (
-    RESULT_BACKED_LGA_IDS,
-    build_completeness_table,
-    build_modeling_dataset,
-    evaluate_clustering_options,
-    export_ml_artifacts,
-    fit_final_clustering,
-    get_feature_columns,
-    load_election_frames,
-)
+try:
+    from scripts.election_ml_pipeline import (
+        RESULT_BACKED_LGA_IDS,
+        build_completeness_table,
+        build_modeling_dataset,
+        evaluate_clustering_options,
+        export_ml_artifacts,
+        fit_final_clustering,
+        get_feature_columns,
+        load_election_frames,
+    )
+
+    ANALYTICS_STACK_AVAILABLE = True
+except ModuleNotFoundError:
+    ANALYTICS_STACK_AVAILABLE = False
+
+    RESULT_BACKED_LGA_IDS = []
+    build_completeness_table = None
+    build_modeling_dataset = None
+    evaluate_clustering_options = None
+    export_ml_artifacts = None
+    fit_final_clustering = None
+    get_feature_columns = None
+    load_election_frames = None
 from .models import (
     AnnouncedLGAResult,
     AnnouncedPUResult,
@@ -111,6 +128,52 @@ class ElectionViewsTests(TestCase):
             before_next_polling_unit_id + 1,
         )
 
+    def test_demo_seed_command_skips_non_empty_database(self):
+        before_units = PollingUnit.objects.count()
+        custom_number = "DT2201888"
+        self.assertFalse(PollingUnit.objects.filter(polling_unit_number=custom_number).exists())
+
+        self.client.post(
+            reverse("elections:polling-unit-create"),
+            data={
+                "lga": 22,
+                "ward": 223,
+                "polling_unit_number": custom_number,
+                "polling_unit_name": "Persistent Demo Unit",
+                "polling_unit_description": "Should survive a non-destructive seed pass",
+                "lat": "5.321",
+                "long": "6.654",
+                "entered_by_user": "Seed Guard Test",
+                "party_PDP": 1,
+                "party_DPP": 2,
+                "party_ACN": 3,
+                "party_PPA": 4,
+                "party_CDC": 5,
+                "party_JP": 6,
+                "party_ANPP": 7,
+                "party_LABO": 8,
+                "party_CPP": 9,
+            },
+            follow=True,
+        )
+
+        self.assertTrue(PollingUnit.objects.filter(polling_unit_number=custom_number).exists())
+        call_command("seed_demo_data", verbosity=0)
+        self.assertEqual(PollingUnit.objects.count(), before_units + 1)
+        self.assertTrue(PollingUnit.objects.filter(polling_unit_number=custom_number).exists())
+
+    def test_audit_command_writes_known_data_quality_report(self):
+        with TemporaryDirectory() as tmpdir:
+            output_path = f"{tmpdir}/data_quality_report.json"
+            call_command("audit_bincom_data", out=output_path, verbosity=0)
+            report = json.loads(Path(output_path).read_text(encoding="utf-8"))
+
+        self.assertEqual(report["placeholder_polling_units"], 170)
+        self.assertEqual(report["duplicate_polling_unit_id_groups"], 18)
+        self.assertEqual(report["polling_unit_lga_ward_mismatches"], 1)
+        self.assertEqual(report["result_backed_lgas"], 8)
+
+    @skipUnless(ANALYTICS_STACK_AVAILABLE, "Analytics dependencies are not installed.")
     def test_ml_pipeline_builds_expected_result_backed_lgas(self):
         frames = load_election_frames("db.sqlite3")
         completeness = build_completeness_table(frames)
@@ -119,6 +182,7 @@ class ElectionViewsTests(TestCase):
         self.assertEqual(modeling.shape[0], 8)
         self.assertEqual(sorted(modeling["lga_id"].tolist()), RESULT_BACKED_LGA_IDS)
 
+    @skipUnless(ANALYTICS_STACK_AVAILABLE, "Analytics dependencies are not installed.")
     def test_ml_pipeline_clustering_outputs_are_valid(self):
         frames = load_election_frames("db.sqlite3")
         modeling = build_modeling_dataset(frames)
@@ -129,6 +193,7 @@ class ElectionViewsTests(TestCase):
         self.assertIn("hierarchical_ward", set(evaluation["method"].tolist()))
         self.assertEqual(clustered["cluster_id"].nunique(), 3)
 
+    @skipUnless(ANALYTICS_STACK_AVAILABLE, "Analytics dependencies are not installed.")
     def test_ml_pipeline_can_export_analysis_artifacts(self):
         with TemporaryDirectory() as tmpdir:
             outputs = export_ml_artifacts(db_path="db.sqlite3", out_dir=tmpdir)
